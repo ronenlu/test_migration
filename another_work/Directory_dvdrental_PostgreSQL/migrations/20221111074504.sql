@@ -1,0 +1,2 @@
+-- create "store" table
+CREATE TABLE "public"."store" ("store_id" serial NOT NULL, "manager_staff_id" smallint NOT NULL, "address_id" smallint NOT NULL, "last_update" timestamp NOT NULL DEFAULT now(), PRIMARY KEY ("store_id"), CONSTRAINT "store_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "public"."address" ("address_id") ON UPDATE CASCADE ON DELETE RESTRICT, CONSTRAINT "store_manager_staff_id_fkey" FOREIGN KEY ("manager_staff_id") REFERENCES "public"."staff" ("staff_id") ON UPDATE CASCADE ON DELETE RESTRICT);

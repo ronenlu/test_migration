@@ -1,0 +1,2 @@
+-- create "address" table
+CREATE TABLE "public"."address" ("address_id" serial NOT NULL, "address" character varying(50) NOT NULL, "address2" character varying(50) NULL, "district" character varying(20) NOT NULL, "city_id" smallint NOT NULL, "postal_code" character varying(10) NULL, "phone" character varying(20) NOT NULL, "last_update" timestamp NOT NULL DEFAULT now(), PRIMARY KEY ("address_id"), CONSTRAINT "fk_address_city" FOREIGN KEY ("city_id") REFERENCES "public"."city" ("city_id") ON UPDATE NO ACTION ON DELETE NO ACTION);

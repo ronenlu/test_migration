@@ -1,0 +1,2 @@
+-- create "film_actor" table
+CREATE TABLE "public"."film_actor" ("actor_id" smallint NOT NULL, "film_id" smallint NOT NULL, "last_update" timestamp NOT NULL DEFAULT now(), PRIMARY KEY ("actor_id", "film_id"), CONSTRAINT "film_actor_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "public"."actor" ("actor_id") ON UPDATE CASCADE ON DELETE RESTRICT, CONSTRAINT "film_actor_film_id_fkey" FOREIGN KEY ("film_id") REFERENCES "public"."film" ("film_id") ON UPDATE CASCADE ON DELETE RESTRICT);
