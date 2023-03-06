@@ -1,1 +1,1 @@
-CREATE TABLE `dept_emp_temp` (`emp_no` int NOT NULL, `from_date` date NULL, `to_date` date NULL)
+CREATE TABLE `dept_emp_temp` (`emp_no` int NOT NULL, `from_date` date NULL, `to_date` date)
