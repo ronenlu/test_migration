@@ -1,0 +1,2 @@
+-- create "invoices" table
+CREATE TABLE `invoices` (`CustomerId` integer NOT NULL, `InvoiceDate` datetime NOT NULL, `BillingAddress` nvarchar NULL, `BillingCity` nvarchar NULL, `BillingState` nvarchar NULL, `BillingCountry` nvarchar NULL, `BillingPostalCode` nvarchar NULL, `Total` numeric NOT NULL, `InvoiceId` integer NOT NULL, PRIMARY KEY (`InvoiceId`), CONSTRAINT `0` FOREIGN KEY (`CustomerId`) REFERENCES `customers` (`CustomerId`) ON UPDATE NO ACTION ON DELETE NO ACTION);

@@ -1,0 +1,2 @@
+-- create "invoice_items" table
+CREATE TABLE `invoice_items` (`InvoiceId` integer NOT NULL, `TrackId` integer NOT NULL, `UnitPrice` numeric NOT NULL, `Quantity` integer NOT NULL, `InvoiceLineId` integer NOT NULL, PRIMARY KEY (`InvoiceLineId`), CONSTRAINT `0` FOREIGN KEY (`TrackId`) REFERENCES `tracks` (`TrackId`) ON UPDATE NO ACTION ON DELETE NO ACTION, CONSTRAINT `1` FOREIGN KEY (`InvoiceId`) REFERENCES `invoices` (`InvoiceId`) ON UPDATE NO ACTION ON DELETE NO ACTION);
