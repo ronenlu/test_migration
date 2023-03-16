@@ -1,0 +1,40 @@
+name: Atlas
+on:
+  # Run whenever code is changed in the master branch,
+  # change this to your root branch.
+  push:
+    branches:
+      - master
+  # Run on PRs where something changed under the path/to/migration/dir/ directory.
+  pull_request:
+
+# Permissions for the Atlas Cloud token to write comments on the pull request.
+permissions: {
+    contents: read,
+    pull-requests: write,
+}
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+        with:
+          fetch-depth: 0 # Mandatory unless "latest" is set below.
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: 'sqlite_dir'
+          dev-url: "sqlite://dev?mode=memory"
+          cloud-url: https://api.atlasgo.link
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+  sync:
+    needs: lint
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ariga/atlas-sync-action@v0
+        with:
+          dir: 'sqlite_dir'
+          driver: sqlite # or: postgres | sqlite | maria
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+          cloud-url: https://api.atlasgo.link
