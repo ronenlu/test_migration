@@ -7,14 +7,13 @@ on:
       - master
   # Run on PRs where something changed under the path/to/migration/dir/ directory.
   pull_request:
-
-# Permissions for the Atlas Cloud token to write comments on the pull request.
-permissions: {
-    contents: read,
-    pull-requests: write,
-}
 jobs:
   lint:
+    # Permissions for the Atlas Cloud token to write comments on the pull request.
+    permissions: {
+      contents: read,
+      pull-requests: write,
+    }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.0.1
@@ -27,6 +26,11 @@ jobs:
           cloud-url: https://api.atlasgo.link
           cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
   sync:
+    # Permissions for the Atlas Cloud token to write comments on the pull request.
+    permissions: {
+      contents: read,
+      pull-requests: write,
+    }
     needs: lint
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
