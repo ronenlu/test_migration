@@ -9,7 +9,7 @@ on:
   pull_request:
     # Replace with your migration directory
     paths:
-      - 'tests/migrations/*'
+      - 'tests/migrations/**'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -41,6 +41,7 @@ jobs:
           # Replace with your migration directory
           dir: 'tests/migrations'
           dev-url: "mysql://root:pass@localhost:3306/dev"
+          cloud-url: https://api.atlasgo.link
           cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
   sync:
     needs: lint
