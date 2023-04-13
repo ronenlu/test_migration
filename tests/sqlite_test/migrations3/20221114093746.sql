@@ -1,0 +1,2 @@
+-- create "customers" table
+CREATE TABLE `customers` (`FirstName` nvarchar NOT NULL, `LastName` nvarchar NOT NULL, `Company` nvarchar NULL, `Address` nvarchar NULL, `City` nvarchar NULL, `State` nvarchar NULL, `Country` nvarchar NULL, `PostalCode` nvarchar NULL, `Phone` nvarchar NULL, `Fax` nvarchar NULL, `Email` nvarchar NOT NULL, `SupportRepId` integer NULL, `CustomerId` integer NOT NULL, PRIMARY KEY (`CustomerId`), CONSTRAINT `0` FOREIGN KEY (`SupportRepId`) REFERENCES `employees` (`EmployeeId`) ON UPDATE NO ACTION ON DELETE NO ACTION);
