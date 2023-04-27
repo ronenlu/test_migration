@@ -19,7 +19,7 @@ jobs:
         with:
           dir: 'another_work/SQLite'
           dev-url: "sqlite://dev?mode=memory"
-          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+          cloud-token: aci_o7uauSbQRZ4FPy4NgmnYjmgnS+cc3X5EPuRpKX5QLRJU/P3ofEV8kfUhRf/0j02py4p+pQDLYdqvS0Rv
   sync:
     needs: lint
     if: github.ref == 'refs/heads/main'
