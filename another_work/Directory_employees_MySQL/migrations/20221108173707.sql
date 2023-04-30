@@ -1,1 +1,0 @@
-DROP TABLE `dept_emp_latest_date`;
