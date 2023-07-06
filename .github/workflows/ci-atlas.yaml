@@ -1,0 +1,35 @@
+name: Atlas
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'sqlite_dir/*'
+# Permissions to write comments on the pull request.
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: 'sqlite_dir'
+          dev-url: 'sqlite://dev?mode=memory'
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_43AY1T }}
+  sync:
+    needs: lint
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ariga/atlas-sync-action@v0
+        with:
+          dir: 'sqlite_dir'
+          driver: sqlite
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_43AY1T }}
