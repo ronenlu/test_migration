@@ -38,7 +38,7 @@ jobs:
       - uses: ariga/setup-atlas@v0
         with:
           cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_60U5PT }}
-      - uses: ariga/atlas-action/migrate/lint@v1
+      - uses: ariga/atlas-action/migrate/lint@test_branch
         with:
           dir: 'file://another_work/Directory_employees_MySQL/migrations'
           dir-name: 'app'
