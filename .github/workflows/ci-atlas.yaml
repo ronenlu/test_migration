@@ -5,10 +5,10 @@ on:
       - main
     paths:
       - .github/workflows/ci-atlas.yaml
-      - 'another_work/Directory_dvdrental_PostgreSQL/migrations/*'
+      - 'another_work/migrations/*'
   pull_request:
     paths:
-      - 'another_work/Directory_dvdrental_PostgreSQL/migrations/*'
+      - 'another_work/migrations/*'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -40,7 +40,7 @@ jobs:
           cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_KNTLKI }}
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
-          dir: 'file://another_work/Directory_dvdrental_PostgreSQL/migrations'
+          dir: 'file://another_work/migrations'
           dir-name: 'app'
           dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
         env:
@@ -48,6 +48,6 @@ jobs:
       - uses: ariga/atlas-action/migrate/push@v1
         if: github.ref == 'refs/heads/main'
         with:
-            dir: 'file://another_work/Directory_dvdrental_PostgreSQL/migrations'
+            dir: 'file://another_work/migrations'
             dir-name: 'app'
             dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
