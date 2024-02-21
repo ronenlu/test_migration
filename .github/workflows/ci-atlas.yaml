@@ -41,13 +41,13 @@ jobs:
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
           dir: 'file://sqlserver/migrations'
-          dir-name: 'app'
-          dev-url: 'sqlserver://sa:pass@localhost:1433/test'
+          dir-name: 'mssql'
+          dev-url: 'sqlserver://sa:P@ssw0rd0995@localhost:1433/test'
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: ariga/atlas-action/migrate/push@v1
         if: github.ref == 'refs/heads/main'
         with:
             dir: 'file://sqlserver/migrations'
-            dir-name: 'app'
-            dev-url: 'sqlserver://sa:pass@localhost:1433/test'
+            dir-name: 'mssql'
+            dev-url: 'sqlserver://sa:P@ssw0rd0995@localhost:1433/test'
