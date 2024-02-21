@@ -5,10 +5,10 @@ on:
       - main
     paths:
       - .github/workflows/ci-atlas.yaml
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'clickhose/migrations/*'
   pull_request:
     paths:
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'clickhose/migrations/*'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -16,20 +16,21 @@ permissions:
 jobs:
   atlas:
     services:
-      # Spin up a mysql:8 container to be used as the dev-database for analysis.
-      mysql:
-        image: mysql:8
+      # Spin up a clickhouse:23.10 container to be used as the dev-database for analysis.
+      clickhouse:
+        image: clickhouse/clickhouse-server:23.10
         env:
-          MYSQL_DATABASE: dev
-          MYSQL_ROOT_PASSWORD: pass
+          CLICKHOUSE_DB: test
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+          CLICKHOUSE_PASSWORD: pass
+          CLICKHOUSE_USER: root
         ports:
-          - 3306:3306
+          - 9000:9000
         options: >-
-          --health-cmd "mysqladmin ping -ppass"
+          --health-cmd "clickhouse-client --host localhost --query 'SELECT 1'"
           --health-interval 10s
-          --health-start-period 10s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,17 +38,17 @@ jobs:
           fetch-depth: 0
       - uses: ariga/setup-atlas@v0
         with:
-          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_60U5PT }}
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_FWEXY6 }}
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
-          dir: 'file://another_work/Directory_employees_MySQL/migrations'
-          dir-name: 'app'
-          dev-url: 'mysql://root:pass@localhost:3306/dev'
+          dir: 'file://clickhose/migrations'
+          dir-name: 'clickhouse'
+          dev-url: 'clickhouse://root:pass@localhost:9000/test'
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: ariga/atlas-action/migrate/push@v1
         if: github.ref == 'refs/heads/main'
         with:
-            dir: 'file://another_work/Directory_employees_MySQL/migrations'
-            dir-name: 'app'
-            dev-url: 'mysql://root:pass@localhost:3306/dev'
+            dir: 'file://clickhose/migrations'
+            dir-name: 'clickhouse'
+            dev-url: 'clickhouse://root:pass@localhost:9000/test'
