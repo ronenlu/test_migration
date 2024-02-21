@@ -5,10 +5,10 @@ on:
       - main
     paths:
       - .github/workflows/ci-atlas.yaml
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'mssql/migrations/*'
   pull_request:
     paths:
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'mssql/migrations/*'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -16,20 +16,20 @@ permissions:
 jobs:
   atlas:
     services:
-      # Spin up a mysql:8 container to be used as the dev-database for analysis.
-      mysql:
-        image: mysql:8
+      # Spin up a mcr.microsoft.com/mssql/server:2022-latest container to be used as the dev-database for analysis.
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          MYSQL_DATABASE: dev
-          MYSQL_ROOT_PASSWORD: pass
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: P@ssw0rd0995
         ports:
-          - 3306:3306
+          - 1433:1433
         options: >-
-          --health-cmd "mysqladmin ping -ppass"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -U sa -P P@ssw0rd0995 -Q \"SELECT 1\""
           --health-interval 10s
-          --health-start-period 10s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,17 +37,17 @@ jobs:
           fetch-depth: 0
       - uses: ariga/setup-atlas@v0
         with:
-          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_60U5PT }}
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_9C70TR }}
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
-          dir: 'file://another_work/Directory_employees_MySQL/migrations'
-          dir-name: 'app'
-          dev-url: 'mysql://root:pass@localhost:3306/dev'
+          dir: 'file://mssql/migrations'
+          dir-name: 'mssql'
+          dev-url: 'sqlserver://sa:P@ssw0rd0995@localhost:1433/test'
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: ariga/atlas-action/migrate/push@v1
         if: github.ref == 'refs/heads/main'
         with:
-            dir: 'file://another_work/Directory_employees_MySQL/migrations'
-            dir-name: 'app'
-            dev-url: 'mysql://root:pass@localhost:3306/dev'
+            dir: 'file://mssql/migrations'
+            dir-name: 'mssql'
+            dev-url: 'sqlserver://sa:P@ssw0rd0995@localhost:1433/test'
