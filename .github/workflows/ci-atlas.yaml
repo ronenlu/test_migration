@@ -5,10 +5,10 @@ on:
       - main
     paths:
       - .github/workflows/ci-atlas.yaml
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'another_work/Directory_dvdrental_PostgreSQL/migrations/*'
   pull_request:
     paths:
-      - 'another_work/Directory_employees_MySQL/migrations/*'
+      - 'another_work/Directory_dvdrental_PostgreSQL/migrations/*'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -16,20 +16,20 @@ permissions:
 jobs:
   atlas:
     services:
-      # Spin up a mysql:8 container to be used as the dev-database for analysis.
-      mysql:
-        image: mysql:8
+      # Spin up a postgres:15 container to be used as the dev-database for analysis.
+      postgres:
+        image: postgres:15
         env:
-          MYSQL_DATABASE: dev
-          MYSQL_ROOT_PASSWORD: pass
+          POSTGRES_DB: dev
+          POSTGRES_PASSWORD: pass
         ports:
-          - 3306:3306
+          - 5432:5432
         options: >-
-          --health-cmd "mysqladmin ping -ppass"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-start-period 10s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,17 +37,17 @@ jobs:
           fetch-depth: 0
       - uses: ariga/setup-atlas@v0
         with:
-          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_60U5PT }}
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_KNTLKI }}
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
-          dir: 'file://another_work/Directory_employees_MySQL/migrations'
+          dir: 'file://another_work/Directory_dvdrental_PostgreSQL/migrations'
           dir-name: 'app'
-          dev-url: 'mysql://root:pass@localhost:3306/dev'
+          dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: ariga/atlas-action/migrate/push@v1
         if: github.ref == 'refs/heads/main'
         with:
-            dir: 'file://another_work/Directory_employees_MySQL/migrations'
+            dir: 'file://another_work/Directory_dvdrental_PostgreSQL/migrations'
             dir-name: 'app'
-            dev-url: 'mysql://root:pass@localhost:3306/dev'
+            dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
