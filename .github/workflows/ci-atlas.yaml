@@ -35,6 +35,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: print GITHUB_ACTOR and GITHUB_ACTOR_ID
+        run: |
+          echo "GITHUB_ACTOR=${GITHUB_ACTOR}"
+          echo "GITHUB_ACTOR_ID=${GITHUB_ACTOR_ID}"
       - uses: ariga/setup-atlas@v0
         with:
           cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_X8ZRCZ }}
