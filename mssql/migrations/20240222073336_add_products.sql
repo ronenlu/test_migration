@@ -1,4 +1,4 @@
--- Create Product Table
+-- Create Product Table a
 CREATE TABLE Products (
     ProductID int IDENTITY(1,1) NOT NULL,
     ProductName nvarchar(50) NOT NULL,
