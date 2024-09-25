@@ -1,4 +1,4 @@
 CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
-  name TEXT,
+  name TEXT
 );
