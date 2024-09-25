@@ -2,7 +2,7 @@ name: Push Declarative Schemas
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/atlas-push.yaml
       - 'schema.sql' # Can be HCL, ORM, other instead.
