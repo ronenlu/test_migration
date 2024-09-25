@@ -1,0 +1,52 @@
+name: Plan Declarative Migrations
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/schema-plan.yml
+      - 'schema.sql'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/schema-plan.yml
+      - 'schema.sql'
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  plan:
+    name: plan
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Atlas
+        uses: ariga/setup-atlas@master
+        with:
+          cloud-token: ${{ secrets.ATLAS_TOKEN }}
+      - name: Run schema plan
+        uses: ariga/atlas-action/schema/plan@master
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          env: dev # Use the "dev" environment from the atlas.hcl file.
+  approve:
+    name: approve
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Atlas
+        uses: ariga/setup-atlas@v0
+        with:
+          cloud-token: ${{ secrets.ATLAS_TOKEN }}
+      - name: Approve the plan
+        id: plan-approve
+        uses: ariga/atlas-action/schema/plan/approve@master
+        with:
+          env: dev # Use the "dev" environment from the atlas.hcl file.
