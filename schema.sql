@@ -1,0 +1,6 @@
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  email TEXT NOT NULL DEFAULT 'unknown',
+  password TEXT NULL
+);
