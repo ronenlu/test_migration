@@ -6,7 +6,7 @@ env "dev" {
     src = "file://schema.sql"
     # Atlas Registry config.
     repo {
-      name = "demo"
+      name = "demo-test-ronen"
     }
   }
 }
