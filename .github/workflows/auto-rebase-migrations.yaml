@@ -1,0 +1,24 @@
+name: Rebase Atlas Migrations
+on:
+  push:
+    branches-ignore:
+      - master
+jobs:
+  migrate-auto-rebase:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ariga/setup-atlas@v0
+      with:
+        cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: config git to commit changes
+      run: |
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+    - uses: ariga/atlas-action/migrate/autorebase@v1
+      with:
+        dir: file://migrations
