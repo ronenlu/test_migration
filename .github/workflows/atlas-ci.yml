@@ -1,14 +1,15 @@
 name: Atlas
 on:
   push:
-    branches-ignore:
-      - master
+    branches:
+      - main
     paths:
-      - .github/workflows/ci-atlas.yaml
+      - .github/workflows/atlas-ci.yml
       - 'migrations/*'
   pull_request:
     paths:
       - 'migrations/*'
+      - '.github/workflows/atlas-ci.yml'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
