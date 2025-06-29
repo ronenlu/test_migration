@@ -41,5 +41,5 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           dir: 'file://migrations'
-          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true;autoConfigEmulator=true'
+          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev-2?useplaintext=true;autoConfigEmulator=true'
           dir-name: 'spanner'
