@@ -19,7 +19,7 @@ jobs:
     services:
       # Spin up a spanner emulator to be used as the dev-database for analysis.
       spanner:
-        image: gcr.io/cloud-spanner-emulator/emulator:1.5.34
+        image: gcr.io/cloud-spanner-emulator/emulator
         ports:
           - 9010:9010
     runs-on: ubuntu-latest
@@ -42,5 +42,5 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           dir: 'file://migrations'
-          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev-2?useplaintext=true;autoConfigEmulator=true'
+          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true'
           dir-name: 'spanner'
