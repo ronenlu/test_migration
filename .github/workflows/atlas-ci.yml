@@ -1,11 +1,14 @@
-name: Atlas CI/CD
+name: Atlas
 on:
   push:
     branches:
-      - main # Use your main branch here.
+      - main
+    paths:
+      - .github/workflows/ci-atlas.yaml
+      - 'migrations/*'
   pull_request:
     paths:
-      - 'migrations/*' # Use the path to your migration directory here.
+      - 'migrations/*'
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
@@ -13,32 +16,30 @@ permissions:
 jobs:
   atlas:
     services:
-      # Spin up a mysql:8 container to be used as the dev-database for analysis.
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_DATABASE: dev
-          MYSQL_ROOT_PASSWORD: pass
+      # Spin up a spanner emulator to be used as the dev-database for analysis.
+      spanner:
+        image: gcr.io/cloud-spanner-emulator/emulator:1.5.34
         ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -ppass"
-          --health-interval 10s
-          --health-start-period 10s
-          --health-timeout 5s
-          --health-retries 10
+          - 9010:9010
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-#      - uses: ariga/setup-atlas@v0
-#        with:
-#          cloud-token: ${{ secrets.ATLAS_TOKEN }}
-#      - uses: ariga/atlas-action/migrate/lint@v1
-#        with:
-#          dir: 'file://migrations'
-#          dir-name: 'my-project' # The name of the project in Atlas Cloud
-#          dev-url: "mysql://root:pass@localhost:3306/dev"
+      - uses: ariga/setup-atlas@v0
+        with:
+          cloud-token: '${{ secrets.ATLAS_CLOUD_TOKEN }}'
+          version: 'beta'
+      - uses: ariga/atlas-action/migrate/lint@v1
+        with:
+          dir: 'file://migrations'
+          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true;autoConfigEmulator=true'
+          dir-name: 'spanner'
+        env:
+          GITHUB_TOKEN: '${{ github.token }}'
+      - uses: ariga/atlas-action/migrate/push@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          dir: 'file://migrations'
+          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true;autoConfigEmulator=true'
+          dir-name: 'spanner'
