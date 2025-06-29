@@ -1,8 +1,8 @@
 name: Atlas
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - master
     paths:
       - .github/workflows/ci-atlas.yaml
       - 'migrations/*'
