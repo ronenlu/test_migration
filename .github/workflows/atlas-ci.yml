@@ -29,6 +29,7 @@ jobs:
       - uses: ariga/setup-atlas@v0
         with:
           cloud-token: '${{ secrets.ATLAS_CLOUD_TOKEN }}'
+          version: 'beta'
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
           dir: 'file://migrations'
