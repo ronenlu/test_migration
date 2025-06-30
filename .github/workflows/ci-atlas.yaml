@@ -1,0 +1,42 @@
+name: Atlas
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ci-atlas.yaml
+      - 'sqlite_dir/*'
+  pull_request:
+    paths:
+      - 'sqlite_dir/*'
+# Permissions to write comments on the pull request.
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  atlas:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ariga/setup-atlas@v0
+        with:
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN_RJMOTW }}
+      - uses: ariga/atlas-action/migrate/lint@v1
+        with:
+          dir: 'file://sqlite_dir'
+          dir-name: 'sync-action-integration-test'
+          dev-url: 'sqlite://dev?mode=memory'
+          config: 'file://atlas.hcl'
+          env: 'local'
+      - uses: ariga/atlas-action/migrate/push@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          dir: 'file://sqlite_dir'
+          dir-name: 'sync-action-integration-test'
+          dev-url: 'sqlite://dev?mode=memory'
+          config: 'file://atlas.hcl'
+          env: 'local'
