@@ -48,3 +48,9 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_JSON }}
       - uses: google-github-actions/setup-gcloud@v2.1.1
+      - uses: ariga/atlas-action/migrate/apply@v1
+        with:
+          url: "spanner://projects/spanner-driver-dev/instances/test-instance/databases/example-db"
+          tx-mode: 'none'
+          dir: 'atlas://spanner' # A directory stored in Atlas Cloud, use ?tag=<tag> to specify a tag
+
