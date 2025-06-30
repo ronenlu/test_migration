@@ -44,3 +44,7 @@ jobs:
           dir: 'file://migrations'
           dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true'
           dir-name: 'spanner'
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_JSON }}
+      - uses: google-github-actions/setup-gcloud@v2.1.1
