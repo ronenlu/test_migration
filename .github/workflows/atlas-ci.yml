@@ -1,56 +1,79 @@
 name: Atlas
 on:
   push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/atlas-ci.yml
-      - 'migrations/*'
+    branches: [ master ]
   pull_request:
-    paths:
-      - 'migrations/*'
-      - '.github/workflows/atlas-ci.yml'
+    branches: [ master ]
+  workflow_dispatch:
 # Permissions to write comments on the pull request.
 permissions:
   contents: read
   pull-requests: write
 jobs:
-  atlas:
+  plan:
+    if: ${{ github.event_name == 'pull_request' }}
     services:
-      # Spin up a spanner emulator to be used as the dev-database for analysis.
-      spanner:
-        image: gcr.io/cloud-spanner-emulator/emulator
+      # Spin up a postgres:15 container to be used as the dev-database for analysis.
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: dev
+          POSTGRES_PASSWORD: pass
         ports:
-          - 9010:9010
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 5
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: ariga/setup-atlas@v0
         with:
-          cloud-token: '${{ secrets.ATLAS_CLOUD_TOKEN }}'
-          version: 'beta'
-      - uses: ariga/atlas-action/migrate/lint@v1
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+      - uses: ariga/atlas-action/schema/plan@v1
         with:
-          dir: 'file://migrations'
-          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true;autoConfigEmulator=true'
-          dir-name: 'spanner'
+          env: ci
+          dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
+  push:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    services:
+      # Spin up a postgres:15 container to be used as the dev-database for analysis.
+      postgres:
+        image: postgres:15
         env:
-          GITHUB_TOKEN: '${{ github.token }}'
-      - uses: ariga/atlas-action/migrate/push@v1
-        if: github.ref == 'refs/heads/main'
+          POSTGRES_DB: dev
+          POSTGRES_PASSWORD: pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v3
         with:
-          dir: 'file://migrations'
-          dev-url: 'spanner://localhost:9010/projects/project/instances/instance/databases/dev?useplaintext=true'
-          dir-name: 'spanner'
-      - uses: google-github-actions/auth@v2
+          fetch-depth: 0
+      - uses: ariga/setup-atlas@v0
         with:
-          credentials_json: ${{ secrets.GCP_JSON }}
-      - uses: google-github-actions/setup-gcloud@v2.1.1
-      - uses: ariga/atlas-action/migrate/apply@v1
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}
+      - uses: ariga/atlas-action/schema/plan/approve@v1
+        id: plan-approve
         with:
-          url: "spanner://projects/spanner-driver-dev/instances/test-instance/databases/example-db"
-          tx-mode: 'none'
-          dir: 'atlas://spanner' # A directory stored in Atlas Cloud, use ?tag=<tag> to specify a tag
-
+          env: ci
+          dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
+      - uses: ariga/atlas-action/schema/push@v1
+        with:
+          env: ci
+          dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
