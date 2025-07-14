@@ -1,9 +1,9 @@
 name: Atlas
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 # Permissions to write comments on the pull request.
 permissions:
@@ -42,7 +42,7 @@ jobs:
           env: ci
           dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
   push:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     services:
       # Spin up a postgres:15 container to be used as the dev-database for analysis.
       postgres:
@@ -74,6 +74,10 @@ jobs:
           env: ci
           dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
       - uses: ariga/atlas-action/schema/push@v1
+        with:
+          env: ci
+          dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
+      - uses: ariga/atlas-action/schema/apply@v1
         with:
           env: ci
           dev-url: 'postgres://postgres:pass@localhost:5432/dev?search_path=public&sslmode=disable'
