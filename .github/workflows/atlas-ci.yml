@@ -2,7 +2,7 @@ name: Atlas
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/ci-atlas.yaml
       - 'migrations/*'
@@ -26,18 +26,19 @@ jobs:
           version: 'beta'
       - uses: ariga/atlas-action/migrate/lint@v1
         with:
+          dev-url: '${{ secrets.DEV_DATABRICKS_URL }}'
           dir: 'file://migrations'
           dir-name: 'databricks-demo'
         env:
           GITHUB_TOKEN: '${{ github.token }}'
       - uses: ariga/atlas-action/migrate/push@v1
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         with:
           dir: 'file://migrations'
           dev-url:  '${{ secrets.DEV_DATABRICKS_URL }}'
           dir-name: 'databricks-demo'
       - uses: ariga/atlas-action/migrate/apply@v1
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         with:
           dir: 'file://migrations'
           url: '${{ secrets.DB_URL }}'
