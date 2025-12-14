@@ -1,16 +1,15 @@
 apiVersion: db.atlasgo.io/v1alpha1
-kind: AtlasMigration
+kind: AtlasSchema
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
   name: myapp
 spec:
-  url: mysql://root:pass@mysql:3306/example # Replace with your database connection string
+  url: mysql://root:pass@mysql:3306/example
   cloud:
     tokenFrom:
       secretKeyRef:
         key: token
         name: atlas-credentials
-  dir:
-    remote:
-      name: "argo-versioned" # The name of the project on the Schema Registry
+  schema:
+    url: atlas://argo-declartive?tag=latest
